@@ -1,4 +1,4 @@
-package tools
+package priceclient
 
 import (
 	"context"
@@ -10,15 +10,11 @@ import (
 	"time"
 
 	"k8s.io/klog"
-
-	"github.com/cloudpilot-ai/priceserver/pkg/apis"
 )
 
 type QueryClientInterface interface {
 	Run(ctx context.Context)
-	ListInstancesDetails(region string) *apis.RegionalEC2Price
-	GetInstanceDetails(region, instanceType string) *apis.InstanceTypePrice
-	TriggerRefreshData()
+	ListInstancesDetails(region string) *RegionalEC2Price
 }
 
 type QueryClientImpl struct {
@@ -28,7 +24,7 @@ type QueryClientImpl struct {
 	triggerChannel chan struct{}
 
 	awsMutex     sync.Mutex
-	awsPriceData map[string]*apis.RegionalEC2Price
+	awsPriceData map[string]*RegionalEC2Price
 }
 
 func NewQueryClient(awsEndpoint, region string) QueryClientInterface {
@@ -36,7 +32,7 @@ func NewQueryClient(awsEndpoint, region string) QueryClientInterface {
 		region:         region,
 		awsEndpoint:    awsEndpoint,
 		triggerChannel: make(chan struct{}, 100),
-		awsPriceData:   map[string]*apis.RegionalEC2Price{},
+		awsPriceData:   map[string]*RegionalEC2Price{},
 	}
 	ret.refreshData()
 
@@ -59,7 +55,7 @@ func (q *QueryClientImpl) Run(ctx context.Context) {
 	}
 }
 
-func (q *QueryClientImpl) refreshSpecificInstanceTypeData(region, instanceType string) *apis.InstanceTypePrice {
+func (q *QueryClientImpl) refreshSpecificInstanceTypeData(region, instanceType string) *InstanceTypePrice {
 	url := fmt.Sprintf("%s/api/v1/aws/ec2/regions/%s/types/%s/price", q.awsEndpoint, region, instanceType)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -85,7 +81,7 @@ func (q *QueryClientImpl) refreshSpecificInstanceTypeData(region, instanceType s
 		return nil
 	}
 
-	var price apis.InstanceTypePrice
+	var price InstanceTypePrice
 	err = json.Unmarshal(data, &price)
 	if err != nil {
 		klog.Errorf("Failed to unmarshal price data: %v", err)
@@ -133,7 +129,7 @@ func (q *QueryClientImpl) refreshData() {
 	}
 }
 
-func (q *QueryClientImpl) ListInstancesDetails(region string) *apis.RegionalEC2Price {
+func (q *QueryClientImpl) ListInstancesDetails(region string) *RegionalEC2Price {
 	q.awsMutex.Lock()
 	defer q.awsMutex.Unlock()
 
@@ -141,22 +137,4 @@ func (q *QueryClientImpl) ListInstancesDetails(region string) *apis.RegionalEC2P
 		return nil
 	}
 	return q.awsPriceData[region].DeepCopy()
-}
-
-func (q *QueryClientImpl) GetInstanceDetails(region, instanceType string) *apis.InstanceTypePrice {
-	q.awsMutex.Lock()
-	defer q.awsMutex.Unlock()
-
-	if _, ok := q.awsPriceData[region]; !ok {
-		return nil
-	}
-	ret, ok := q.awsPriceData[region].InstanceTypeEC2Price[instanceType]
-	if !ok {
-		return q.refreshSpecificInstanceTypeData(region, instanceType)
-	}
-	return ret
-}
-
-func (q *QueryClientImpl) TriggerRefreshData() {
-	q.triggerChannel <- struct{}{}
 }

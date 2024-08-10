@@ -1,4 +1,4 @@
-package apis
+package priceclient
 
 type RegionTypeKey struct {
 	Region       string
