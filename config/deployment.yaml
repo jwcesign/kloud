@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kloud-analyzer
+  namespace: kloud
+  labels:
+    app.kubernetes.io/component: kloud-analyzer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kloud-analyzer
+  template:
+    metadata:
+      labels:
+        app: kloud-analyzer
+    spec:
+      serviceAccountName: kloud-sa
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+          - 114.114.114.114
+        searches:
+          - cloudpilot.ai
+      containers:
+        - name: kloud-analyzer
+          image: ko://github.com/jwcesign/kloud/cmd/analyzer
+          imagePullPolicy: IfNotPresent
+          args:
+            - --v=4 # debug level log
+          env:
+            - name: LEADER_ELECTION_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            requests:
+              cpu: 250m
+              memory: 250Mi
+            limits:
+              cpu: 250m
+              memory: 250Mi
+      terminationGracePeriodSeconds: 30
