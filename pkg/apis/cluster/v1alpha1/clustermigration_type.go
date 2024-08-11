@@ -8,7 +8,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:categories={cloudpilot-ai}
-// +kubebuilder:metadata:labels=clustermigration.cloudpilot.ai/crd-install=true
+// +kubebuilder:metadata:labels=cluster.cloudpilot.ai/crd-install=true
 
 type ClusterMigration struct {
 	metav1.TypeMeta   `json:",inline"`

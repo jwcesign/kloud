@@ -5,10 +5,10 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: (devel)
   labels:
-    clustermigration.cloudpilot.ai/crd-install: "true"
-  name: clustermigrations.clustermigration.cloudpilot.ai
+    cluster.cloudpilot.ai/crd-install: "true"
+  name: clustermigrations.cluster.cloudpilot.ai
 spec:
-  group: clustermigration.cloudpilot.ai
+  group: cluster.cloudpilot.ai
   names:
     categories:
     - cloudpilot-ai

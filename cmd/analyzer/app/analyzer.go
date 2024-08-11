@@ -4,10 +4,12 @@ import (
 	"context"
 	"flag"
 
+	"github.com/go-logr/logr"
 	"github.com/spf13/cobra"
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
@@ -38,6 +40,11 @@ func NewAnalyzer(ctx context.Context) *cobra.Command {
 	cmd.Flags().AddFlagSet(logFlagSet)
 
 	return cmd
+}
+
+func init() {
+	// We use klog as the default logger.
+	log.SetLogger(logr.New(log.NullLogSink{}))
 }
 
 func run(ctx context.Context, opts *options.Options) error {
