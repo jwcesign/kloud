@@ -29,18 +29,18 @@ echo "Generating with deepcopy-gen"
 deepcopy-gen \
   --go-header-file "${boilerplate}" \
   --output-file-base zz_generated.deepcopy \
-  --input-dirs github.com/jwcesign/kloud/pkg/apis/clustermigration/v1alpha1
+  --input-dirs github.com/jwcesign/kloud/pkg/apis/cluster/v1alpha1
 
 echo "Generating with register-gen"
 register-gen \
   --go-header-file "${boilerplate}" \
   --output-file-base zz_generated.register \
-  --input-dirs github.com/jwcesign/kloud/pkg/apis/clustermigration/v1alpha1
+  --input-dirs github.com/jwcesign/kloud/pkg/apis/cluster/v1alpha1
 
 echo "Generating with conversion-gen"
 conversion-gen \
   -O zz_generated.conversion \
   --go-header-file "${boilerplate}" \
-  --input-dirs github.com/jwcesign/kloud/pkg/apis/clustermigration/v1alpha1
+  --input-dirs github.com/jwcesign/kloud/pkg/apis/cluster/v1alpha1
 
 

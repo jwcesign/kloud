@@ -11,7 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
-	"github.com/jwcesign/kloud/pkg/apis/clustermigration/v1alpha1"
+	"github.com/jwcesign/kloud/pkg/apis/cluster/v1alpha1"
 )
 
 type Controller struct {
