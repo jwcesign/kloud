@@ -1,0 +1,48 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kloud-role
+rules:
+  - apiGroups:
+      - "*"
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - clustermigration.cloudpilot.ai
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kloud-sa
+  namespace: kloud
+  labels:
+    app.kubernetes.io/name: kloud
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kloud-rb
+  labels:
+    app.kubernetes.io/name: kloud
+subjects:
+  - kind: ServiceAccount
+    name: kloud-sa
+    namespace: kloud
+roleRef:
+  kind: ClusterRole
+  name: kloud-role
+  apiGroup: rbac.authorization.k8s.io

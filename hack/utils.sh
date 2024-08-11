@@ -6,7 +6,7 @@ function utils::create_gopath_tree() {
   # $2: go path
   local go_path=$2
 
-  local cloudpilot_go_package="github.com/jwcesign/kcloud"
+  local cloudpilot_go_package="github.com/jwcesign/kloud"
 
   local go_pkg_dir="${go_path}/src/${cloudpilot_go_package}"
   go_pkg_dir=$(dirname "${go_pkg_dir}")
